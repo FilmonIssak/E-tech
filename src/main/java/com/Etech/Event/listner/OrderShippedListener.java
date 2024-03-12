@@ -1,7 +1,7 @@
 package com.Etech.Event.listner;
 
-import com.Etech.Dto.CustomerRegistrationDTO;
 import com.Etech.Dto.OrderPlacedDto;
+import com.Etech.Dto.OrderShippedDto;
 import com.Etech.Model.Email;
 import com.Etech.Service.EmailService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -12,18 +12,18 @@ import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Service;
 
 @Service
-public class OrderCancelationListener {
+public class OrderShippedListener {
 
     @Autowired
     private EmailService emailService;
 
-    @KafkaListener(topics = {"order-canceled"})
-    public void listenWhenOrderCanceled(@Payload String memberDTO) {
+    @KafkaListener(topics = {"order-shipped"})
+    public void listenWhenOrderShipped(@Payload String memberDTO) {
 
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
         try {
-            System.out.println("Received new Order cancellation details ....");
+            System.out.println("Received new Order Updates ....");
             OrderPlacedDto messageUserDetails = objectMapper.readValue(memberDTO, OrderPlacedDto.class);
 
             String body = "<html>" +
@@ -74,15 +74,15 @@ public class OrderCancelationListener {
                     "<body>" +
                     "<div class='container'>" +
                     "<h1>Welcome to E-tech Online Shopping System</h1>" +
-                    "<p>Your Order Cancellation Details are as follows:</p>" +
+                    "<p>Your Order Delivery Status is as follows:</p>" +
                     "<ul>" +
-                    "    <li><strong class='black-text'>Canceled Order Number:</strong> <span class='red-text'>" + messageUserDetails.getOrderNumber() + "</span></li>" +
-                    "    <li><strong class='black-text'>Total Amount:</strong> <span class='red-text'>$" + messageUserDetails.getOrderTotal() + " will be refunded</span></li>" +
+                    "    <li><strong class='black-text'>Order Number:</strong> <span class='red-text'>" + messageUserDetails.getOrderNumber() + "</span></li>" +
+                    "    <li><strong class='black-text'>Order Status:</strong> <span class='red-text'>" + messageUserDetails.getOrderStatus() + " successfully</span></li>" +
                     "    <li><strong class='black-text'>Order Date:</strong> <span class='red-text'>" + messageUserDetails.getOrderDate() + "</span></li>" +
                     "</ul>" +
                     "<p>Thank you for choosing E-tech Online Shopping System</p>" +
                     "<a href='mailto:etechonlineshopping2023@gmail.com' class='button'>Contact us via Email</a>" +
-                    "<a href='tel:641-456-3464' class='button'>Call us at 843-653-6506</a>" +
+                    "<a href='tel:641-233-2353' class='button'>Call us at 843-653-6506</a>" +
                     "</div>" +
                     "</body>" +
                     "</html>";
@@ -93,5 +93,8 @@ public class OrderCancelationListener {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
     }
+
+
 }
